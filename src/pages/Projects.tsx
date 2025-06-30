@@ -4,7 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Plus, Calendar, Users, Clock, DollarSign, MoreHorizontal } from 'lucide-react';
+import { Calendar, Users, Clock, DollarSign } from 'lucide-react';
+import NewProjectDialog from '@/components/NewProjectDialog';
+import ProjectDetailsDialog from '@/components/ProjectDetailsDialog';
+import ManageProjectDialog from '@/components/ManageProjectDialog';
+import ProjectOptionsMenu from '@/components/ProjectOptionsMenu';
 
 const Projects = () => {
   const projects = [
@@ -100,10 +104,7 @@ const Projects = () => {
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Gestión de Proyectos</h1>
             <p className="text-gray-600">Administra todos los proyectos de desarrollo</p>
           </div>
-          <Button className="bg-primary-500 hover:bg-primary-600">
-            <Plus className="h-4 w-4 mr-2" />
-            Nuevo Proyecto
-          </Button>
+          <NewProjectDialog />
         </div>
 
         {/* Resumen de proyectos */}
@@ -158,9 +159,7 @@ const Projects = () => {
                     <Badge className={getStatusColor(project.status)}>
                       {project.status}
                     </Badge>
-                    <Button variant="ghost" size="sm">
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
+                    <ProjectOptionsMenu project={project} />
                   </div>
                 </div>
               </CardHeader>
@@ -247,12 +246,16 @@ const Projects = () => {
                 </div>
 
                 <div className="flex justify-end space-x-2 mt-6 pt-4 border-t">
-                  <Button variant="outline" size="sm">
-                    Ver Detalles
-                  </Button>
-                  <Button size="sm" className="bg-primary-500 hover:bg-primary-600">
-                    Gestionar
-                  </Button>
+                  <ProjectDetailsDialog project={project}>
+                    <Button variant="outline" size="sm">
+                      Ver Detalles
+                    </Button>
+                  </ProjectDetailsDialog>
+                  <ManageProjectDialog project={project}>
+                    <Button size="sm" className="bg-primary-500 hover:bg-primary-600">
+                      Gestionar
+                    </Button>
+                  </ManageProjectDialog>
                 </div>
               </CardContent>
             </Card>
