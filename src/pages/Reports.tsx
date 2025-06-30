@@ -4,6 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { BarChart, FileText, TrendingUp, Calendar, Download, Filter } from 'lucide-react';
+import ReportFiltersDialog from '@/components/ReportFiltersDialog';
+import ReportPeriodDialog from '@/components/ReportPeriodDialog';
+import ExportInvoicesDialog from '@/components/ExportInvoicesDialog';
 
 const Reports = () => {
   const projectReports = [
@@ -134,18 +137,24 @@ const Reports = () => {
             <p className="text-gray-600">Análisis de rendimiento, rentabilidad y productividad</p>
           </div>
           <div className="flex space-x-3">
-            <Button variant="outline">
-              <Filter className="h-4 w-4 mr-2" />
-              Filtros
-            </Button>
-            <Button variant="outline">
-              <Calendar className="h-4 w-4 mr-2" />
-              Período
-            </Button>
-            <Button className="bg-primary-500 hover:bg-primary-600">
-              <Download className="h-4 w-4 mr-2" />
-              Exportar
-            </Button>
+            <ReportFiltersDialog>
+              <Button variant="outline">
+                <Filter className="h-4 w-4 mr-2" />
+                Filtros
+              </Button>
+            </ReportFiltersDialog>
+            <ReportPeriodDialog>
+              <Button variant="outline">
+                <Calendar className="h-4 w-4 mr-2" />
+                Período
+              </Button>
+            </ReportPeriodDialog>
+            <ExportInvoicesDialog>
+              <Button className="bg-primary-500 hover:bg-primary-600">
+                <Download className="h-4 w-4 mr-2" />
+                Exportar
+              </Button>
+            </ExportInvoicesDialog>
           </div>
         </div>
 
