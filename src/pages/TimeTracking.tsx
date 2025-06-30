@@ -1,12 +1,17 @@
-
+import { useState } from 'react';
 import Layout from '@/components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, Clock, Play, Pause, Square, Filter } from 'lucide-react';
+import TimeFiltersDialog from '@/components/TimeFiltersDialog';
+import NewTimeEntryDialog from '@/components/NewTimeEntryDialog';
+import { useToast } from '@/hooks/use-toast';
 
 const TimeTracking = () => {
-  const todayEntries = [
+  const { toast } = useToast();
+  
+  const [todayEntries, setTodayEntries] = useState([
     {
       id: 1,
       developer: 'Juan Pérez',
@@ -51,7 +56,7 @@ const TimeTracking = () => {
       status: 'active',
       description: 'Pruebas unitarias y de integración para módulo de contactos'
     }
-  ];
+  ]);
 
   const weeklyStats = [
     { developer: 'Juan Pérez', project: 'E-commerce Platform', hours: 32, target: 40, efficiency: 89 },
@@ -68,6 +73,43 @@ const TimeTracking = () => {
     { project: 'CRM System', totalHours: 120, thisWeek: 18, budget: 130, completion: 92 },
     { project: 'Inventory Management', totalHours: 45, thisWeek: 12, budget: 100, completion: 45 }
   ];
+
+  const handlePauseEntry = (entryId: number) => {
+    setTodayEntries(entries => 
+      entries.map(entry => 
+        entry.id === entryId 
+          ? { ...entry, status: 'paused', endTime: 'Pausado' }
+          : entry
+      )
+    );
+
+    const entry = todayEntries.find(e => e.id === entryId);
+    toast({
+      title: "Timer pausado",
+      description: `Se pausó el timer de ${entry?.developer} en ${entry?.project}`,
+    });
+  };
+
+  const handleFinishEntry = (entryId: number) => {
+    const currentTime = new Date().toLocaleTimeString('es-ES', { 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    });
+
+    setTodayEntries(entries => 
+      entries.map(entry => 
+        entry.id === entryId 
+          ? { ...entry, status: 'completed', endTime: currentTime }
+          : entry
+      )
+    );
+
+    const entry = todayEntries.find(e => e.id === entryId);
+    toast({
+      title: "Timer finalizado",
+      description: `Se finalizó el timer de ${entry?.developer} en ${entry?.project}`,
+    });
+  };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -104,18 +146,25 @@ const TimeTracking = () => {
             <p className="text-gray-600">Seguimiento de horas trabajadas por proyecto y desarrollador</p>
           </div>
           <div className="flex space-x-3">
-            <Button variant="outline">
-              <Filter className="h-4 w-4 mr-2" />
-              Filtros
-            </Button>
-            <Button className="bg-primary-500 hover:bg-primary-600">
-              <Clock className="h-4 w-4 mr-2" />
-              Nuevo Registro
-            </Button>
+            <TimeFiltersDialog
+              trigger={
+                <Button variant="outline">
+                  <Filter className="h-4 w-4 mr-2" />
+                  Filtros
+                </Button>
+              }
+            />
+            <NewTimeEntryDialog
+              trigger={
+                <Button className="bg-primary-500 hover:bg-primary-600">
+                  <Clock className="h-4 w-4 mr-2" />
+                  Nuevo Registro
+                </Button>
+              }
+            />
           </div>
         </div>
 
-        {/* Resumen diario */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <Card>
             <CardContent className="p-6">
@@ -190,11 +239,50 @@ const TimeTracking = () => {
                       
                       {entry.status === 'active' && (
                         <div className="mt-3 flex space-x-2">
-                          <Button size="sm" variant="outline" className="text-yellow-600 border-yellow-300">
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            className="text-yellow-600 border-yellow-300 hover:bg-yellow-50"
+                            onClick={() => handlePauseEntry(entry.id)}
+                          >
                             <Pause className="h-3 w-3 mr-1" />
                             Pausar
                           </Button>
-                          <Button size="sm" variant="outline" className="text-red-600 border-red-300">
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            className="text-red-600 border-red-300 hover:bg-red-50"
+                            onClick={() => handleFinishEntry(entry.id)}
+                          >
+                            <Square className="h-3 w-3 mr-1" />
+                            Finalizar
+                          </Button>
+                        </div>
+                      )}
+
+                      {entry.status === 'paused' && (
+                        <div className="mt-3 flex space-x-2">
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            className="text-green-600 border-green-300 hover:bg-green-50"
+                            onClick={() => setTodayEntries(entries => 
+                              entries.map(e => 
+                                e.id === entry.id 
+                                  ? { ...e, status: 'active', endTime: 'En progreso' }
+                                  : e
+                              )
+                            )}
+                          >
+                            <Play className="h-3 w-3 mr-1" />
+                            Reanudar
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            className="text-red-600 border-red-300 hover:bg-red-50"
+                            onClick={() => handleFinishEntry(entry.id)}
+                          >
                             <Square className="h-3 w-3 mr-1" />
                             Finalizar
                           </Button>
@@ -206,7 +294,6 @@ const TimeTracking = () => {
               </CardContent>
             </Card>
 
-            {/* Horas por proyecto */}
             <Card className="animate-slide-in" style={{ animationDelay: '0.2s' }}>
               <CardHeader>
                 <CardTitle className="flex items-center">
@@ -240,7 +327,6 @@ const TimeTracking = () => {
             </Card>
           </div>
 
-          {/* Estadísticas semanales */}
           <Card className="animate-slide-in" style={{ animationDelay: '0.1s' }}>
             <CardHeader>
               <CardTitle className="flex items-center">
