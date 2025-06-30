@@ -1,12 +1,16 @@
-
 import Layout from '@/components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { DollarSign, FileText, Send, Download, Calendar, TrendingUp } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import NewInvoiceDialog from '@/components/NewInvoiceDialog';
+import ExportInvoicesDialog from '@/components/ExportInvoicesDialog';
+import { useState } from 'react';
 
 const Billing = () => {
-  const invoices = [
+  const { toast } = useToast();
+  const [invoices, setInvoices] = useState([
     {
       id: 'INV-2024-001',
       client: 'TechCorp',
@@ -55,7 +59,7 @@ const Billing = () => {
       status: 'overdue',
       description: 'Sistema de gestión de inventarios'
     }
-  ];
+  ]);
 
   const monthlyStats = [
     { month: 'Enero', invoiced: 45000, paid: 42000, pending: 3000 },
@@ -119,6 +123,57 @@ const Billing = () => {
   const totalPending = totalInvoiced - totalPaid;
   const overdueAmount = invoices.filter(inv => inv.status === 'overdue').reduce((sum, inv) => sum + inv.amount, 0);
 
+  const handleDownloadInvoice = (invoiceId: string) => {
+    console.log('Descargando factura:', invoiceId);
+    toast({
+      title: "Descargando factura",
+      description: `Se está descargando la factura ${invoiceId}`,
+    });
+    
+    // Simular descarga
+    setTimeout(() => {
+      const blob = new Blob([`Factura ${invoiceId} - Contenido PDF`], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${invoiceId}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    }, 500);
+  };
+
+  const handleSendInvoice = (invoiceId: string) => {
+    console.log('Enviando factura:', invoiceId);
+    
+    setInvoices(prev => prev.map(inv => 
+      inv.id === invoiceId ? { ...inv, status: 'sent' } : inv
+    ));
+    
+    toast({
+      title: "Factura enviada",
+      description: `La factura ${invoiceId} ha sido enviada al cliente`,
+    });
+  };
+
+  const handleMarkAsPaid = (invoiceId: string) => {
+    console.log('Marcando como pagada:', invoiceId);
+    
+    setInvoices(prev => prev.map(inv => 
+      inv.id === invoiceId ? { 
+        ...inv, 
+        status: 'paid', 
+        paidDate: new Date().toISOString().split('T')[0] 
+      } : inv
+    ));
+    
+    toast({
+      title: "Factura marcada como pagada",
+      description: `La factura ${invoiceId} ha sido marcada como pagada`,
+    });
+  };
+
   return (
     <Layout>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 animate-fade-in">
@@ -128,14 +183,18 @@ const Billing = () => {
             <p className="text-gray-600">Gestión de facturas, cobros y reportes financieros</p>
           </div>
           <div className="flex space-x-3">
-            <Button variant="outline">
-              <Download className="h-4 w-4 mr-2" />
-              Exportar
-            </Button>
-            <Button className="bg-primary-500 hover:bg-primary-600">
-              <FileText className="h-4 w-4 mr-2" />
-              Nueva Factura
-            </Button>
+            <ExportInvoicesDialog>
+              <Button variant="outline">
+                <Download className="h-4 w-4 mr-2" />
+                Exportar
+              </Button>
+            </ExportInvoicesDialog>
+            <NewInvoiceDialog>
+              <Button className="bg-primary-500 hover:bg-primary-600">
+                <FileText className="h-4 w-4 mr-2" />
+                Nueva Factura
+              </Button>
+            </NewInvoiceDialog>
           </div>
         </div>
 
@@ -240,18 +299,30 @@ const Billing = () => {
                       </div>
                       
                       <div className="flex justify-end space-x-2">
-                        <Button variant="outline" size="sm">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleDownloadInvoice(invoice.id)}
+                        >
                           <Download className="h-3 w-3 mr-1" />
                           Descargar
                         </Button>
                         {invoice.status === 'draft' && (
-                          <Button size="sm" className="bg-blue-500 hover:bg-blue-600">
+                          <Button 
+                            size="sm" 
+                            className="bg-blue-500 hover:bg-blue-600"
+                            onClick={() => handleSendInvoice(invoice.id)}
+                          >
                             <Send className="h-3 w-3 mr-1" />
                             Enviar
                           </Button>
                         )}
                         {invoice.status === 'sent' && (
-                          <Button size="sm" className="bg-green-500 hover:bg-green-600">
+                          <Button 
+                            size="sm" 
+                            className="bg-green-500 hover:bg-green-600"
+                            onClick={() => handleMarkAsPaid(invoice.id)}
+                          >
                             Marcar como Pagada
                           </Button>
                         )}
