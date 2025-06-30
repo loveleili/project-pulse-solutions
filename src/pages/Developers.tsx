@@ -1,10 +1,12 @@
-
 import Layout from '@/components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Plus, Mail, Phone, MapPin, Code, Award, Calendar } from 'lucide-react';
+import NewDeveloperDialog from '@/components/NewDeveloperDialog';
+import ContactDeveloperDialog from '@/components/ContactDeveloperDialog';
+import AssignProjectDialog from '@/components/AssignProjectDialog';
 
 const Developers = () => {
   const developers = [
@@ -145,10 +147,7 @@ const Developers = () => {
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Gestión de Desarrolladores</h1>
             <p className="text-gray-600">Administra tu equipo de desarrollo</p>
           </div>
-          <Button className="bg-primary-500 hover:bg-primary-600">
-            <Plus className="h-4 w-4 mr-2" />
-            Añadir Desarrollador
-          </Button>
+          <NewDeveloperDialog />
         </div>
 
         {/* Resumen del equipo */}
@@ -284,12 +283,16 @@ const Developers = () => {
                     Ver Perfil
                   </Button>
                   <div className="space-x-2">
-                    <Button variant="outline" size="sm">
-                      Asignar Proyecto
-                    </Button>
-                    <Button size="sm" className="bg-primary-500 hover:bg-primary-600">
-                      Contactar
-                    </Button>
+                    <AssignProjectDialog developer={developer}>
+                      <Button variant="outline" size="sm">
+                        Asignar Proyecto
+                      </Button>
+                    </AssignProjectDialog>
+                    <ContactDeveloperDialog developer={developer}>
+                      <Button size="sm" className="bg-primary-500 hover:bg-primary-600">
+                        Contactar
+                      </Button>
+                    </ContactDeveloperDialog>
                   </div>
                 </div>
               </CardContent>
