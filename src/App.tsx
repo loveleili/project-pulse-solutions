@@ -8,7 +8,6 @@ import Index from "./pages/Index";
 import Projects from "./pages/Projects";
 import Developers from "./pages/Developers";
 import TimeTracking from "./pages/TimeTracking";
-import HourRegistration from "./pages/HourRegistration";
 import Billing from "./pages/Billing";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
@@ -27,7 +26,6 @@ const App = () => (
           <Route path="/projects" element={<Projects />} />
           <Route path="/developers" element={<Developers />} />
           <Route path="/time-tracking" element={<TimeTracking />} />
-          <Route path="/hour-registration" element={<HourRegistration />} />
           <Route path="/billing" element={<Billing />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/settings" element={<Settings />} />

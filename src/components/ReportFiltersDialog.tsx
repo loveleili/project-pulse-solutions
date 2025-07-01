@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -143,9 +142,9 @@ const ReportFiltersDialog = ({ children }: ReportFiltersDialogProps) => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todas las rentabilidades</SelectItem>
-                <SelectItem value="high">Alta (>30%)</SelectItem>
+                <SelectItem value="high">Alta {'>'}30%</SelectItem>
                 <SelectItem value="medium">Media (15-30%)</SelectItem>
-                <SelectItem value="low">Baja (<15%)</SelectItem>
+                <SelectItem value="low">Baja {'<'}15%</SelectItem>
               </SelectContent>
             </Select>
           </div>
